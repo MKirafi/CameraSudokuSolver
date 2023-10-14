@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Camera Sudoku Solver</string>
+    <string name="title_camera">Camera</string>
+    <string name="title_grid">Grid</string>
+</resources>
