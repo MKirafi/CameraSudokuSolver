@@ -54,7 +54,7 @@ public class CameraFragment extends Fragment {
         View root = binding.getRoot();
         mContext = requireContext();
 
-        requestPermissionsLauncher.launch(PERMISSIONS);
+//        requestPermissionsLauncher.launch(PERMISSIONS);
 
 
 
