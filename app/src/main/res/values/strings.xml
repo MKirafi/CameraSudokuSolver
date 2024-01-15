@@ -2,4 +2,8 @@
     <string name="app_name">Camera Sudoku Solver</string>
     <string name="title_camera">Camera</string>
     <string name="title_grid">Grid</string>
+    <string name="timer_start">00:00</string>
+    <string name="menu_content_description">Open Menu</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

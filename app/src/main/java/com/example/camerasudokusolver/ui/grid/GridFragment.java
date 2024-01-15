@@ -140,15 +140,19 @@ public class GridFragment extends Fragment {
                 {0, 0, 0, 4, 1, 9, 0, 0, 5},
                 {0, 0, 0, 0, 8, 0, 0, 7, 9}
         };
-
+        Grid grid = new Grid(9, 9, 3, 3);
+        String probability = binding.probabilityFillVal.getText().toString();
+        if(probability.equals("")) {
+            grid.testRandomFill(25);
+            binding.probabilityFillVal.setText("25");
+        } else {
+            grid.testRandomFill(Integer.parseInt(probability));
+        }
+        gridValues = grid.getGrid();
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 int gridVal = gridValues[i][j];
-                if (gridVal == 0) {
-                    editTexts[i][j].setText("");
-                } else {
-                    editTexts[i][j].setText(Integer.toString(gridVal));
-                }
+                editTexts[i][j].setText(gridVal == 0 ? "" : Integer.toString(gridValues[i][j]));
             }
         }
     }
@@ -221,6 +225,13 @@ public class GridFragment extends Fragment {
                 gridLayout.removeView(editText);
             }
         }
+    }
+
+    @Override
+    public void onViewStateRestored(@NonNull Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        System.out.println("[onViewStateRestored]");
+        gridValues = viewModel.getGridValues();
     }
 
 

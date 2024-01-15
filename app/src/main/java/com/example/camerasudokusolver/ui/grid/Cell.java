@@ -1,24 +1,17 @@
 package com.example.camerasudokusolver.ui.grid;
 
 public class Cell {
-    private int row;
-    private int col;
-    private int block;
-    private int[] possibleVals;
-    private int curVal;
+    public final int row;
+    public final int col;
+    public final int block;
+    public int[] possibleVals;
+    public int curVal;
 
-    public Cell(int row, int col, int block, int[] possibleVals, int curVal) {
-        this.row = row;
+    public Cell(int col, int row, int block, int[] possibleVals, int curVal) {
         this.col = col;
+        this.row = row;
         this.block = block;
         this.possibleVals = possibleVals;
         this.curVal = curVal;
-    }
-
-    public int[] getPossibleVals() {
-        return this.possibleVals;
-    }
-    public void setPossibleVals(int[] possibleVals) {
-        this.possibleVals = possibleVals;
     }
 }

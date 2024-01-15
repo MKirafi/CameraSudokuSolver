@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineStart10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.10"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineStart30"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.30"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineStart50"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineStart70"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.70"/>
+
+    <ImageButton
+        android:id="@+id/settings_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/rowsText"
+        android:layout_width="70sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="rows"
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart10"
+        app:layout_constraintTop_toBottomOf="@+id/settings_back" />
+
+    <TextView
+        android:id="@+id/colsText"
+        android:layout_width="70sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="cols"
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart10"
+        app:layout_constraintTop_toBottomOf="@+id/rowsText" />
+
+    <EditText
+        android:id="@+id/rowsEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="@id/rowsText"
+        app:layout_constraintBottom_toBottomOf="@id/rowsText"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart30"
+        android:layout_marginLeft="2dp"/>
+
+    <EditText
+        android:id="@+id/colsEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="@id/colsText"
+        app:layout_constraintBottom_toBottomOf="@id/colsText"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart30"
+        android:layout_marginLeft="2dp"/>
+
+    <TextView
+        android:id="@+id/blockSizex"
+        android:layout_width="70sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="block size x"
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart10"
+        app:layout_constraintTop_toBottomOf="@+id/colsText" />
+
+    <TextView
+        android:id="@+id/blockSizey"
+        android:layout_width="70sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="block size y"
+        android:textSize="25sp"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart10"
+        app:layout_constraintTop_toBottomOf="@+id/blockSizex" />
+
+    <EditText
+        android:id="@+id/blockSizexText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="@id/blockSizex"
+        app:layout_constraintBottom_toBottomOf="@id/blockSizex"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart30"
+        android:layout_marginLeft="2dp"/>
+
+    <EditText
+        android:id="@+id/blockSizeyText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:inputType="numberDecimal"
+        app:layout_constraintTop_toTopOf="@id/blockSizey"
+        app:layout_constraintBottom_toBottomOf="@id/blockSizey"
+        app:layout_constraintStart_toStartOf="@+id/guidelineStart30"
+        android:layout_marginLeft="2dp"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
