@@ -1,132 +1,115 @@
 package com.example.camerasudokusolver.ui.grid;
 
-import com.example.camerasudokusolver.ui.grid.GridFragment;
 
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 public class SudokuSolver {
-    private static int[][] solvedGrid = new int[9][9];
-    private static int[][] currentGrid;
     private static int rows;
     private static int cols;
+    private static int blockSizex;
+    private static int blockSizey;
+    private static int[][] currentGrid;
 
-    public static boolean solveSudoku() {
-        currentGrid = GridFragment.getGridValues();
-        rows = solvedGrid.length;
-        cols = rows;
-        return solve();
+    public static Grid solve(Grid grid) {
+        rows = grid.getRows();
+        cols = grid.getCols();
+        blockSizex = grid.getBlockSizex();
+        blockSizey = grid.getBlockSizey();
+
+        // Create a deep copy of the grid to modify
+        currentGrid = copyGrid(grid.getGrid());
+
+        // Attempt to solve
+        if (solveRecursive()) {
+            return new Grid(currentGrid, blockSizex, blockSizey); // Return solved grid
+        }
+        return grid; // If unsolvable, return original grid
     }
-    private static boolean solve(){
-        for(int row = 0; row < cols; row++){
-            for(int column = 0; column < rows; column++){
-                if(currentGrid[row][column] == 0){
-                    for(int i = 1; i <= 9; i++){
-                        currentGrid[row][column] = i;
-                        if(valid(currentGrid, row, column) && solve()){
+
+    private static boolean solveRecursive() {
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                if (currentGrid[row][col] == 0) {
+                    List<Integer> possibleVals = generateShuffledNumbers();
+
+                    for (int num : possibleVals) {
+                        currentGrid[row][col] = num;
+                        if (isValid(row, col) && solveRecursive()) {
                             return true;
                         }
-                        currentGrid[row][column] = 0;
+                        currentGrid[row][col] = 0; // Reset if failed
                     }
-                    return false;
+                    return false; // No valid number found
                 }
+            }
+        }
+        return true; // Solved
+    }
+
+    private static List<Integer> generateShuffledNumbers() {
+        List<Integer> numbers = new ArrayList<>();
+        for (int i = 1; i <= cols; i++) {
+            numbers.add(i);
+        }
+        Collections.shuffle(numbers, new Random(System.currentTimeMillis())); // Shuffle to randomize solving order
+        return numbers;
+    }
+
+    private static boolean isValid(int row, int col) {
+        return isRowValid(row) && isColumnValid(col) && isBlockValid(row, col);
+    }
+
+    private static boolean isRowValid(int row) {
+        boolean[] seen = new boolean[cols + 1];
+        for (int i = 0; i < cols; i++) {
+            int num = currentGrid[row][i];
+            if (num != 0) {
+                if (seen[num]) return false;
+                seen[num] = true;
             }
         }
         return true;
     }
 
-    //Checks if the newly imputed value is valid in that spot
-    private static boolean valid(int[][] currentGrid, int row, int column){
-        return (rowcheck(currentGrid, row) && columncheck(currentGrid, column) && blockcheck(currentGrid, row, column));
-    }
-
-    //Checks if the given row is valid
-    private static boolean rowcheck(int[][] currentGrid, int row){
-        int[] values = new int[9];
-        for (int i = 0; i < currentGrid[row].length; i++){
-            for(int j = 0; j < values.length; j++){
-                if (currentGrid[row][i] == values[j] && currentGrid[row][i] != 0){
-                    return false;
-                }
-
-            }
-            values[i] = currentGrid[row][i];
-        }
-        return true;
-    }
-
-    //Checks if the given column is valid
-    private static boolean columncheck(int[][] currentGrid, int column){
-        int[] values = new int[9];
-        for (int i = 0; i < currentGrid.length; i++){
-            for(int j = 0; j < values.length; j++){
-                if (currentGrid[i][column] == values[j] && currentGrid[i][column] != 0){
-                    return false;
-                }
-            }
-            values[i] = currentGrid[i][column];
-        }
-        return true;
-    }
-
-    //Checks if the fiven Block of 3x3 is valid
-    private static boolean blockcheck(int[][] currentGrid, int row, int column){
-        int [] rows = new int[3];
-        int [] columns = new  int[3];
-        int [] values = new int[9];
-        if(row == 0 || row == 1 || row == 2){
-            rows = new int[]{0, 1, 2};
-        }else if(row == 3 || row == 4 || row == 5){
-            rows = new int[]{3, 4, 5};
-        }else if(row == 6 || row == 7 || row == 8){
-            rows = new int[]{6, 7, 8};
-        }
-
-        if(column == 0 || column == 1 || column == 2){
-            columns = new int[]{0, 1, 2};
-        }else if(column == 3 || column == 4 || column == 5){
-            columns = new int[]{3, 4, 5};
-        }else if(column == 6 || column == 7 || column == 8){
-            columns = new int[]{6, 7, 8};
-        }
-
-
-        for(int i = rows[0]; i <= rows[2]; i++){
-            for(int j = columns[0]; j <= columns[2]; j++){
-                for(int k = 0; k < values.length; k++){
-                    if (currentGrid[i][j] == values[k] && currentGrid[i][j] != 0){
-                        return false;
-                    }
-                }
-                for(int x = 0; x < values.length; x++){
-                    if (values[x] == 0){
-                        values[x] = currentGrid[i][j];
-                        break;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-
-    public static int[][] getSolvedGrid() {
-//        for (int i = 0; i < 9; i++) {
-//            for (int j = 0; j < 9; j++) {
-//                solvedGrid[i][j] = 7;
-//            }
-//        }
-        solvedGrid = currentGrid;
-        return solvedGrid;
-    }
-
-    // Method to print the current currentGrid status
-    private void printGridStatus() {
+    private static boolean isColumnValid(int col) {
+        boolean[] seen = new boolean[rows + 1];
         for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                // Print the currentGrid values as needed
-                System.out.print(currentGrid[i][j] + " ");
+            int num = currentGrid[i][col];
+            if (num != 0) {
+                if (seen[num]) return false;
+                seen[num] = true;
             }
-            System.out.println(); // Move to the next line for a new row
         }
-        System.out.println(); // Separate the prints for different time intervals
+        return true;
+    }
+
+    private static boolean isBlockValid(int row, int col) {
+        boolean[] seen = new boolean[rows + 1]; // Max possible values = rows
+
+        int startRow = (row / blockSizey) * blockSizey;
+        int startCol = (col / blockSizex) * blockSizex;
+
+        for (int i = startRow; i < startRow + blockSizey; i++) {
+            for (int j = startCol; j < startCol + blockSizex; j++) {
+                int num = currentGrid[i][j];
+                if (num != 0) {
+                    if (seen[num]) return false;
+                    seen[num] = true;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static int[][] copyGrid(int[][] original) {
+        int[][] copy = new int[rows][cols];
+        for (int i = 0; i < rows; i++) {
+            copy[i] = original[i].clone();
+        }
+        return copy;
     }
 
 }

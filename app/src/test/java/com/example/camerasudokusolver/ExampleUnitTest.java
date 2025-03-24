@@ -42,27 +42,8 @@ public class ExampleUnitTest {
 
     @Test
     public void testRandomFill() {
-        /*
-        ============~~~~~~~~~~~~~~~============
-        ============~~~~~Alert~~~~~============
-        ============~~~~~~~~~~~~~~~============
-
-        Numbers get generated fine, but possible values dont seem to be updating properly
-        so we're getting duplicate numbers in rows/columns/blocks:
-        0 0 0 0 0 0 6 3 5
-        0 0 0 5 0 0 1 0 2
-        9 2 0 1 2 0 0 9 0
-        3 2 7 8 0 3 0 0 0
-        5 8 0 0 0 5 0 0 0
-        4 0 0 6 0 0 3 0 0
-        0 0 0 0 6 4 0 0 0
-        0 6 7 0 0 9 0 0 5
-        0 0 0 0 0 0 0 1 0
-         */
         Random random = new Random(System.currentTimeMillis());
         Grid testGrid = new Grid(9, 9, 3, 3);
-//        testGrid.printGridStatus();
-//        testGrid.printGridStatusDetailed();
         Cell curCell;
         for (int i = 0; i < 81; i++) {
             curCell = testGrid.getCellByIndex(i);
@@ -70,27 +51,26 @@ public class ExampleUnitTest {
             if (randomValue <= 1) {
                 int randomNumber = random.nextInt(9) + 1;
                 int trycounter = 0;
-//                while(!Arrays.asList(curCell.possibleVals).contains(randomNumber)) {
                 while(true) {
                     boolean numberFound = false;
-                    for(int value : curCell.possibleVals) {
+                    for(int value : curCell.getPossibleVals()) {
                         if(value == randomNumber) numberFound = true;
                     }
                     if(numberFound) {
-                        System.out.println("found: " + i + " " + Arrays.toString(curCell.possibleVals) + " " + randomNumber);
+                        System.out.println("found: " + i + " " + Arrays.toString(curCell.getPossibleVals()) + " " + randomNumber);
                         break;
                     }
-                    System.out.println("not found: " + i + " " + Arrays.toString(curCell.possibleVals) + " " + randomNumber);
+                    System.out.println("not found: " + i + " " + Arrays.toString(curCell.getPossibleVals()) + " " + randomNumber);
                     randomNumber = random.nextInt(9) + 1;
                     trycounter++;
 
-                    if(trycounter > 100) {
+                    if(trycounter > 30) {
                         randomNumber = 0;
                         break;
                     }
                 }
-                testGrid.setCell(curCell.row, curCell.col, randomNumber);
-                System.out.println("cell valid: " + testGrid.checkCellValid(curCell.row, curCell.col));
+                testGrid.setCell(curCell.getRow(), curCell.getCol(), randomNumber);
+                System.out.println("cell valid: " + testGrid.checkCellValid(curCell.getRow(), curCell.getCol()));
             }
         }
         testGrid.printGridStatus();

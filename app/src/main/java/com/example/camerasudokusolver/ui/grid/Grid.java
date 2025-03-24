@@ -1,10 +1,13 @@
 package com.example.camerasudokusolver.ui.grid;
 
 import static java.lang.Math.max;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.IntStream;
@@ -46,6 +49,17 @@ public class Grid {
         }
     }
 
+    // New constructor to initialize a Grid from an int[][] array
+    public Grid(int[][] existingGrid, int blockSizex, int blockSizey) {
+        this(existingGrid.length, existingGrid[0].length, blockSizex, blockSizey);
+
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                setCell(row, col, existingGrid[row][col]);
+            }
+        }
+    }
+
     /* Current block # is going to be the rows of blocks up to the current block
      plus the remainder on that row. So divide current row by amount of vertical
      blocks and multiply with amount of horizontal blocks to get current vertical
@@ -65,15 +79,15 @@ public class Grid {
         return ((row % blockSizey) * blockSizex) + (col % blockSizex);
     }
 
-    private Cell[] getRow(int row, int col) {
+    private Cell[] getRow(int row) {
         return Arrays.copyOfRange(cells, row * cols, (row * cols) + cols);
     }
 
-    private Cell[] getCol(int row, int col) {
+    private Cell[] getCol(int col) {
         Cell[] currentCol = new Cell[rows];
         for(int i = 0; i < cols; i++) {
             currentCol[i] = cells[(cols * i) + col];
-            System.out.println("[getCol] index: " + (cols * i) + col + " cell row: " + currentCol[i].row + " cell col: " + currentCol[i].col);
+            System.out.println("[getCol] index: " + (cols * i) + col + " cell row: " + currentCol[i].getRow() + " cell col: " + currentCol[i].getCol());
         }
         return currentCol;
     }
@@ -86,17 +100,34 @@ public class Grid {
         int[][] grid = new int[rows][cols];
 
         for(int i = 0; i < rows*cols; i++) {
-            grid[i/rows][i%cols] = cells[i].curVal;
+            grid[i/cols][i%cols] = cells[i].getVal();
         }
 
         return grid;
     }
 
+    public int getBlockSizex() {
+        return blockSizex;
+    }
+
+    public int getBlockSizey() {
+        return blockSizey;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
+    }
+
+
     public void printGridStatus() {
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < cols; col++) {
                 // Print the grid values as needed
-                System.out.print(cells[getCellNum(row, col)].curVal + " ");
+                System.out.print(cells[getCellNum(row, col)].getVal() + " ");
             }
             System.out.println(); // Move to the next line for a new row
         }
@@ -110,10 +141,10 @@ public class Grid {
                 // Print the grid values as needed
                 Cell curCell = cells[getCellNum(row, col)];
                 System.out.print("cellnum: " + getCellNum(row, col) +
-                                " Val: " + curCell.curVal +
-                                " Row: " + curCell.row +
-                                " Col: " + curCell.col +
-                                " block: " + curCell.block +
+                                " Val: " + curCell.getVal() +
+                                " Row: " + curCell.getRow() +
+                                " Col: " + curCell.getCol() +
+                                " block: " + curCell.getBlock() +
                                 " | ");
             }
             System.out.println(); // Move to the next line for a new row
@@ -126,7 +157,7 @@ public class Grid {
                 // Print the grid values as needed
                 Cell curCell = cells[getCellNum(row, col)];
                 System.out.print("cellnum: " + getCellNum(row, col) +
-                                " possible values: " + Arrays.toString(curCell.possibleVals) + " ");
+                                " possible values: " + Arrays.toString(curCell.getPossibleVals()) + " ");
             }
             System.out.println(); // Move to the next line for a new row
         }
@@ -149,10 +180,10 @@ public class Grid {
         Cell[] curNumGroup = new Cell[1];
         switch(numGroup) {
             case "row":
-                curNumGroup = getRow(row, col);
+                curNumGroup = getRow(row);
                 break;
             case "col":
-                curNumGroup = getCol(row, col);
+                curNumGroup = getCol(col);
                 break;
             case "block":
                 curNumGroup = getBlock(row, col);
@@ -170,19 +201,19 @@ public class Grid {
         Cell[] curNumGroup = getNumGroup(numGroup, row, col);
         Set<Integer> set = new HashSet<>();
         for (Cell cell : curNumGroup) {
-            int cellVal =  cell.curVal;
+            int cellVal =  cell.getVal();
             //System.out.println("[checkNumGroup]: Checking cell " + getCellNum(row, col) + " with value " + cellVal + " against cell "  + getCellNum(cell.row, cell.col) + " with value " + cell.curVal + ". Current set contents:");
             //for (Integer value : set) {
             //    System.out.print(value + " ");
             //}
             //System.out.println();
             // Check if the number is invalid or the element is already in the set (duplicate)
-            if(getCellNum(row, col) == getCellNum(cell.row, cell.col) || cellVal == 0) {
+            if(getCellNum(row, col) == getCellNum(cell.getRow(), cell.getCol()) || cellVal == 0) {
                 continue;
             }
             if ((cellVal < 1 || cellVal > max(rows, cols)) || !set.add(cellVal)) {
                 System.out.println("[checkNumGroup] checking " + numGroup + " failed at row "
-                                    + cell.row + " col " + cell.col + " with value " + cellVal);
+                                    + cell.getRow() + " col " + cell.getCol() + " with value " + cellVal);
                 return false;
             }
         }
@@ -192,7 +223,7 @@ public class Grid {
 
     public void setCell(int row, int col, int val) {
         // Set cell value
-        cells[getCellNum(row, col)].curVal = val;
+        cells[getCellNum(row, col)].setVal(val);
 
         // If the value isn't valid or is 0 (not filled), no need to update possible values
         // of associated number groups.
@@ -207,20 +238,10 @@ public class Grid {
 
         for(Cell[] numGroup : curNumGroups) {
             for(Cell cell : numGroup) {
-                /*
-                ============~~~~~~~~~~~~~~~============
-                ============~~~~~Alert~~~~~============
-                ============~~~~~~~~~~~~~~~============
-
-                Null check below is TEMPORARY! Fix it!
-                 */
-//                if(cell == null) {
-//                    continue;
-//                }
                 // Given that possibleVals is ordered and we know the value we want to update
                 // we can directly access it in the array and set it to 0.
-                cell.possibleVals[val-1] = 0;
-                System.out.println("cell index: " + getCellNum(cell.row, cell.col) + " possible vals: " + Arrays.toString(cell.possibleVals) + " val removed: " + val);
+                cell.updatePossibleVals(0, val-1);
+                System.out.println("cell index: " + getCellNum(cell.getRow(), cell.getCol()) + " possible vals: " + Arrays.toString(cell.getPossibleVals()) + " val removed: " + val);
             }
         }
     }
@@ -230,40 +251,48 @@ public class Grid {
     }
 
 
-    public void testRandomFill(int probability) {
+    public boolean testRandomFill(int probability) {
+        Grid solvedGrid = SudokuSolver.solve(this); // Solve the grid
+        if (solvedGrid != null) {
+            this.copyFrom(solvedGrid); // Update this instance with the solved grid
+        }
         Random random = new Random(System.currentTimeMillis());
-        Cell curCell;
-        for (int i = 0; i < 81; i++) {
-            curCell = cells[i];
-            double randomValue = random.nextDouble();
-            if (randomValue <= ((float)probability / 100)) {
-                int randomNumber = random.nextInt(9) + 1;
-                int trycounter = 0;
-                while(true) {
-                    boolean numberFound = false;
-                    for(int value : curCell.possibleVals) {
-                        if(value == randomNumber) numberFound = true;
-                    }
-                    if(numberFound) {
-                        System.out.println("found: " + i + " " + Arrays.toString(curCell.possibleVals) + " " + randomNumber);
-                        break;
-                    }
-                    System.out.println("not found: " + i + " " + Arrays.toString(curCell.possibleVals) + " " + randomNumber);
-                    randomNumber = random.nextInt(9) + 1;
-                    trycounter++;
 
-                    if(trycounter > 30) {
-                        randomNumber = 0;
-                        break;
-                    }
+        List<Cell> removableCells = new ArrayList<>();
+        for (Cell cell : cells) {
+            removableCells.add(cell); // Copy cells to a list for safer modification
+        }
+
+        boolean changed = false;
+
+        for (Cell cell : removableCells) {
+            if (random.nextDouble() <= 1 - ((float) probability / 100)) {
+                if (cell.getVal() != 0) { // Ensure we only remove non-empty cells
+                    cell.setVal(0);
+                    changed = true;
                 }
-                setCell(curCell.row, curCell.col, randomNumber);
-                System.out.println("cell valid: " + checkCellValid(curCell.row, curCell.col));
             }
         }
-        printGridStatus();
-        printGridStatusDetailed();
+
+        return changed; // Return whether any change was made
     }
+
+    public void copyFrom(Grid otherGrid) {
+        if (otherGrid == null || otherGrid.getGrid() == null) return;
+
+        this.rows = otherGrid.getRows();
+        this.cols = otherGrid.getCols();
+        this.blockSizex = otherGrid.getBlockSizex();
+        this.blockSizey = otherGrid.getBlockSizey();
+
+        int[][] newValues = otherGrid.getGrid();
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                this.setCell(i, j, newValues[i][j]); // Update each cell
+            }
+        }
+    }
+
 }
 
 

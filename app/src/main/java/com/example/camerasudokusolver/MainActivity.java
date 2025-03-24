@@ -41,13 +41,16 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
+
+        Toolbar toolbar = binding.toolbar;
+        setSupportActionBar(toolbar);
+
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
 
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
-        ImageButton btnMenu = findViewById(R.id.toolbar_button);
+        ImageButton btnMenu = binding.toolbarButton;
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -62,20 +65,17 @@ public class MainActivity extends AppCompatActivity {
         PopupMenu popupMenu = new PopupMenu(this, view);
         popupMenu.getMenuInflater().inflate(R.menu.settings_dropdown_menu, popupMenu.getMenu());
 
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_settings:
-                        navController.navigate(R.id.settingsFragment);
-                        return true;
-                    case R.id.menu_item_2:
-                        // Handle menu item 2 click
-                        return true;
-                    // Add more menu items as needed
-                    default:
-                        return false;
-                }
+        popupMenu.setOnMenuItemClickListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.action_settings:
+                    navController.navigate(R.id.settingsFragment);
+                    return true;
+                case R.id.menu_item_2:
+                    // Handle menu item 2 click
+                    return true;
+                // Add more menu items as needed
+                default:
+                    return false;
             }
         });
 
